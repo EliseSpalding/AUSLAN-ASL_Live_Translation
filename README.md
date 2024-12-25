@@ -31,11 +31,11 @@ The goal of this project is to develop a robust real-time gesture recognition sy
 ![image](https://github.com/user-attachments/assets/3f4cc061-ebb5-42b8-ba8e-9791968bdd1b)
 
 ### Real Time Detection
-<div style="display: flex; margin-right: 10px;">
-  <img src="Real_Time_Gensture_Recognization/media/a.gif" alt="git1" width=350 height=auto>
-  <img src="Real_Time_Gensture_Recognization/media/e.gif" alt="git2" width=350 height=auto>
-  <img src="Real_Time_Gensture_Recognization/media/j.gif" alt="git3" width=350 height=auto>
-  <img src="Real_Time_Gensture_Recognization/media/t.gif" alt="git4" width=350 height=auto>
+<div style="display: flex;">
+  <img src="Real_Time_Gensture_Recognization/media/a.gif" alt="git1" width=400 height=auto>
+  <img src="Real_Time_Gensture_Recognization/media/e.gif" alt="git2" width=400 height=auto>
+  <img src="Real_Time_Gensture_Recognization/media/j.gif" alt="git3" width=400 height=auto>
+  <img src="Real_Time_Gensture_Recognization/media/t.gif" alt="git4" width=400 height=auto>
 </div>
 
 ### Key Features:
