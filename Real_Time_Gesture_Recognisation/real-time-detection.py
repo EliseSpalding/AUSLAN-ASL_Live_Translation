@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 import random
 import tensorflow as tf
+from PIL import Image, ImageFont, ImageDraw
 
 
 # %%
@@ -25,6 +26,60 @@ tf.random.set_seed(42)
 # Initialize MediaPipe holistic model and drawing utilities
 mp_holistic = mp.solutions.holistic
 mp_drawing = mp.solutions.drawing_utils
+
+def put_aligned_text(cv2_img, text1, font_path1, size1, 
+                     text2, font_path2, size2, 
+                     start_pos, color=(255,255,255), spacing=10):
+
+    cv2_rgb = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
+    pil_img = Image.fromarray(cv2_rgb)
+    draw = ImageDraw.Draw(pil_img)
+
+    font1 = ImageFont.truetype(font_path1, size1)
+    font2 = ImageFont.truetype(font_path2, size2)
+
+    x, y = start_pos
+    for ch1, ch2 in zip(text1, text2):
+        # Draw English letter
+        draw.text((x, y), ch1, font=font1, fill=color)
+
+        # Measure English char width/height with getbbox
+        bbox = font1.getbbox(ch1)
+        w = bbox[2] - bbox[0]
+        h = bbox[3] - bbox[1]
+
+        # Draw ASL letter directly under English
+        draw.text((x, y + h + 10), ch2, font=font2, fill=color)
+
+        # Advance x position for next pair
+        x += w + spacing
+
+    cv2_img = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+    return cv2_img
+
+def get_text_size(text, font_path, font_size):
+    font = ImageFont.truetype(font_path, font_size)
+    bbox = font.getbbox(text)  # returns (left, top, right, bottom)
+    width = bbox[2] - bbox[0]
+    height = bbox[3] - bbox[1]
+    return width, height
+
+# Custom font helper
+def put_custom_font_text(cv2_img, text, position, font_path, font_size, color):
+    # Convert from OpenCV BGR to RGB
+    cv2_rgb = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
+    pil_img = Image.fromarray(cv2_rgb)
+
+    # Load font
+    font = ImageFont.truetype(font_path, font_size)
+
+    # Create drawing context
+    draw = ImageDraw.Draw(pil_img)
+    draw.text(position, text, font=font, fill=color)
+
+    # Convert back to OpenCV BGR
+    cv2_img = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+    return cv2_img
 
 # Define functions for MediaPipe detection and drawing
 def mediapipe_detection(image, model):
@@ -324,7 +379,7 @@ def prob_viz(res, actions, input_frame, colors):
     top_row_letters = 0       # No letters on the top side
     label_height = 30         # Vertical spacing for left and right
     label_width = 120         # Maximum width of rectangles for probability bars
-    top_spacing = 40          # Adjustable spacing for top row
+    top_spacing = 90          # Adjustable spacing for top row
     top_letter_spacing = 5    # Adjustable spacing between top letters
 
     # Iterate over the results and position letters accordingly
@@ -366,7 +421,7 @@ threshold = 0.7
 # Load your trained model
 model = tf.keras.models.load_model('models_weights/best_model_new.keras')  # Ensure 'best_model.keras' is your trained model
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(3)
 
 # Access MediaPipe model
 with mp_holistic.Holistic(
@@ -416,9 +471,18 @@ with mp_holistic.Holistic(
             image = prob_viz(res, actions, image, colors)
 
         # Display the result
-        cv2.rectangle(image, (0, 0), (640, 40), (245, 117, 16), -1)
-        cv2.putText(image, ' '.join(sentence), (3, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+        cv2.rectangle(image, (0, 0), (640, 90), (245, 117, 16), -1)
+        english = ' '.join(sentence)
+        asl = ' '.join(sentence)  # assuming the ASL font maps same chars
+
+        image = put_aligned_text(
+            image,
+            english, "DAYROM__.ttf", 40,       # English font
+            asl, "ASLHandsByFrank.otf", 40, # ASL font
+            start_pos=(10, 3), 
+            color=(255,255,255),
+            spacing=15
+        )
 
         # Show to the screen
         cv2.imshow('Frame', image)

@@ -1,3 +1,5 @@
+Python version: This project requires Python 3.11.x to ensure compatibility with mediapipe 0.10.9 and tensorflow
+
 # AUSLAN Fingerspelling Real-Time Gesture Recognition
 
 Welcome to the AUSLAN Fingerspelling Real-Time Gesture Recognition project! This repository contains all the code and resources for building a real-time gesture recognition system for AUSLAN (Australian Sign Language) fingerspelling using machine learning and computer vision techniques.

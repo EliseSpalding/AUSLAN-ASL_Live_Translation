@@ -1,0 +1,8 @@
+mediapipe==0.10.9
+opencv-python
+tensorflow
+numpy
+matplotlib
+scikit-learn
+pillow
+scipy
